@@ -29,7 +29,7 @@ hoverButton.addEventListener("mouseout", function () {
   secretDiv.classList.add("hidden");
 });
 
-//SELECT exercise
+//SELECT exercise - to finish
 const displaySelected = () => {
   const selectedValue = selectedFruit.value;
   console.log(selectedValue);
