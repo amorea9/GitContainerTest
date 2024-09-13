@@ -32,13 +32,20 @@ hoverButton.addEventListener("mouseout", function () {
 //SELECT exercise
 const displaySelected = () => {
   const selectedValue = selectedFruit.value;
-  console.log(selectedValue);
-  //if the item is already in the list, remove it instead
-  const newListItem = document.createElement("li");
-  newListItem.textContent = selectedValue;
-  fruitList.appendChild(newListItem);
+  // Find if the item already exists in the list
+  const existingItem = Array.from(fruitList.getElementsByTagName("li")).find((item) => item.textContent === selectedValue);
+  // If it exists, remove it, otherwise add it
+  if (existingItem) {
+    fruitList.removeChild(existingItem);
+  } else {
+    const newListItem = document.createElement("li");
+    newListItem.textContent = selectedValue;
+    fruitList.appendChild(newListItem);
+  }
 };
 
 const selectedFruit = document.getElementById("selectDropDown");
 const fruitList = document.getElementById("fruitList");
-selectedFruit.addEventListener("click", displaySelected);
+
+// Using 'change' event so it triggers when a new option is selected
+selectedFruit.addEventListener("change", displaySelected);
