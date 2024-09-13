@@ -8,6 +8,8 @@ const toggleHistoryButton = document.getElementById("toggleHistoryButton");
 const duckHistoryContainer = document.getElementById("duckHistoryContainer");
 const clearHistoryButton = document.getElementById("clearHistoryButton");
 const duckHistoryHeader = document.getElementById("duckHistoryHeader");
+const forceAnswer = document.getElementById("forceAnswer");
+const jokeMessage = document.getElementById("jokeMessage");
 
 //creating messages array where inputs will be stored
 let messageArray = JSON.parse(localStorage.getItem("savedMessages")) || [];
@@ -39,18 +41,46 @@ const clearHistory = () => {
   console.log("local storage cleared", messageArray);
 };
 
+//get a joke as an aswer
+async function fetchJoke() {
+  const response = await fetch("https://v2.jokeapi.dev/joke/Any?type=single");
+  const jokeObject = await response.json();
+  return jokeObject;
+}
+
+const jokeObject = await fetchJoke();
+console.log("joke", jokeObject.joke);
+
+const displayAnswer = async () => {
+  const newJoke = document.createElement("p");
+  newJoke.textContent = jokeObject.joke;
+  jokeMessage.appendChild(newJoke);
+};
+
 //adding event listeners to display or hide the message on mouse over and out
 logo.addEventListener("mouseover", displayHidden);
 logo.addEventListener("mouseout", hideDisplayed);
 toggleHistoryButton.addEventListener("click", toggleHistory);
 clearHistoryButton.addEventListener("click", clearHistory);
+forceAnswer.addEventListener("click", displayAnswer);
 
 //function to add the messages to the array
 const addMessage = () => {
-  //get value from text input
-  const inputValue = textInput.value;
+  //get newMessage from text input and save it as an object with a date
+  const newMessage = {
+    text: textInput.value,
+    date: new Date().toLocaleString([], {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: undefined,
+    }),
+  };
+  console.log("newMessage", newMessage);
   //push new values to the array
-  messageArray.push(inputValue);
+  messageArray.push(newMessage);
   saveToStorage(messageArray);
 };
 
@@ -66,13 +96,13 @@ const savedMessages = JSON.parse(localStorage.getItem("savedMessages"));
 // const parsedArray = JSON.parse(localStorage.getItem("savedMessages"));
 //function that created list elements for each item of the saved messages array
 const displaySavedMessages = () => {
-  console.log("m", messageArray);
   if (!savedMessages) {
     console.log("There are currently no saved messages");
   } else {
     savedMessages.forEach((item) => {
       const newItem = document.createElement("li");
-      newItem.textContent = item;
+      newItem.title = item.date;
+      newItem.textContent = item.text;
       messagesList.appendChild(newItem);
     });
   }
